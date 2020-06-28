@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect, useState }
+  from "react";
 
 import {
   SafeAreaView,
@@ -10,24 +11,62 @@ import {
   TouchableOpacity,
 } from "react-native";
 
+import api from './services/api';
+
+
 export default function App() {
+
+  const [repositories, setRepositories] = useState([]);
+
+  useEffect(() => {
+    api.get('repositories').then(response => {
+      setRepositories(response.data);
+    });
+  }, []);
+
   async function handleLikeRepository(id) {
     // Implement "Like Repository" functionality
+
   }
 
   return (
     <>
       <StatusBar barStyle="light-content" backgroundColor="#7159c1" />
       <SafeAreaView style={styles.container}>
-        <View style={styles.repositoryContainer}>
-          <Text style={styles.repository}>Repository 1</Text>
+        <FlatList
+          style={styles.repositoryContainer}
+          data={repositories}
+          keyExtractor={repository => repository.id}
+          renderItem={({ item: repository }) => (
+            <>
+              <Text style={styles.repository}>{repository.title}</Text>
+              <View style={styles.techsContainer}>
+                <Text style={styles.tech}>
+                  {repository.techs}
+                </Text>
+              </View>
+              <View style={styles.likesContainer}>
+                <Text
+                  style={styles.likeText}
+                  // Remember to replace "1" below with repository ID: {`repository-likes-${repository.id}`}
+                  testID={`repository-likes-${repository.id}`}
+                >
+                  {repository.likes}
+                </Text>
+              </View>
+            </>
+          )}
+        />
+
+        {/* <View style={styles.repositoryContainer}>
+          <Text style={styles.repository}>Title</Text>
 
           <View style={styles.techsContainer}>
             <Text style={styles.tech}>
-              ReactJS
+              tech one
             </Text>
             <Text style={styles.tech}>
-              Node.js
+              tech two
             </Text>
           </View>
 
@@ -49,7 +88,7 @@ export default function App() {
           >
             <Text style={styles.buttonText}>Curtir</Text>
           </TouchableOpacity>
-        </View>
+        </View> */}
       </SafeAreaView>
     </>
   );
@@ -100,7 +139,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: "bold",
     marginRight: 10,
-    color: "#fff",
+    color: "#ff0000",
     backgroundColor: "#7159c1",
     padding: 15,
   },
